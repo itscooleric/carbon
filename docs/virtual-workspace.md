@@ -1,12 +1,12 @@
 # Virtual workspace: Scratch and independent workspaces (carbon-vfs)
 
-Status: PR-A1 of the [default virtual workspace RFC](https://github.com/itscooleric/envoy/pull/25) (revision 3). This page describes what is implemented now. Editing any bounded text file (A2) is described in [text-files.md](text-files.md); virtual-first linked folders with Refresh-as-observation and single-file Sync (A3) in [linked-folders.md](linked-folders.md).
+This document describes Scratch, independent browser workspaces, and persistence. See [text files](text-files.md) for editable text and [linked folders](linked-folders.md) for source observation and single-file Sync.
 
 ## What you see
 
 - **Opening Carbon lands in Scratch.** A fresh browser profile opens a workspace called *Scratch* with one empty Markdown note named after today (`YYYY-MM-DD.md`), with the cursor in it. You do not have to create a Stack, import anything, or give folder permission first. Unsaved text is kept as a draft in this browser and survives a reload. **Save note** (Ctrl/Cmd+S) commits it as a new Scratch revision; History keeps the previous one.
 - **Every workspace is independent.** Scratch, each local copy (Open files / Import folder as local copy), each linked folder and each Envoy Stack is its own workspace with its own files, drafts, Editor/Viewer tabs, History and Dispatches. Opening another source no longer replaces the current workspace or pushes it into History: the current one, including unsaved drafts, is parked in this browser.
-- **Switching.** **Open → Scratch notes** (also the *Back to Scratch notes* link under the workspace title, and the command palette) returns to Scratch. **Open → Workspaces…** lists every stored workspace with its kind, file count, unsaved drafts and size; it can switch, download a parked workspace's committed files as a TAR (files only: not its drafts, History or Dispatches; refused while it has unsaved drafts), or remove one (never the open one, never Scratch). A reload opens the workspace you last switched to. Carbon keeps up to 9 workspaces (Scratch plus 8; RFC D8).
+- **Switching.** **Open → Scratch notes** (also the *Back to Scratch notes* link under the workspace title, and the command palette) returns to Scratch. **Open → Workspaces…** lists every stored workspace with its kind, file count, unsaved drafts and size; it can switch, download a parked workspace's committed files as a TAR (files only: not its drafts, History or Dispatches; refused while it has unsaved drafts), or remove one (never the open one, never Scratch). A reload opens the workspace you last switched to. Carbon keeps up to 9 workspaces (Scratch plus 8).
 - **Same identity, same workspace.** A Stack whose `id` is already stored opens in that workspace: the preview compares the snapshot with that stored Stack, the snapshot becomes its next revision and the previous one goes to that workspace's History (refused while it has unsaved drafts, or if that workspace changed in another tab after the preview). Picking a folder that is already stored as a linked workspace (same folder by `isSameEntry`) switches to it instead of creating a second copy. Local copies always get a new identity.
 - **Dispatch / Return stay Envoy Stack only.** Scratch and local copies do not offer Dispatch or Import Return. A Return is staged, reviewed or accepted only while its own Stack is the open workspace; with Scratch, a copy, a linked folder or another Stack open it is refused and nothing changes.
 
@@ -46,22 +46,14 @@ Rules (`src/carbon/vfs.js`, `src/carbon/mounts.js`):
 - In a memory-only window, closing also warns while a parked workspace holds unsaved drafts or unexported work.
 - `onversionchange` closes the connection and stops saving with a notice, so a future version is never blocked by an open tab.
 
-## Moving from earlier private-beta builds
+## Existing browser data
 
-Carbon is unreleased, and this build deliberately starts a **new** database. It never opens, writes, upgrades or deletes the earlier `envoy-carbon-v1` database, and it does not migrate it. When Carbon detects that the earlier database exists (by name only), the first-start notice says so.
+Earlier builds may use a different IndexedDB database. Carbon does not silently migrate or delete those records. Export work from an older build and import its archive into the current build before discarding the old browser data.
 
-To keep work from an earlier build:
+## Known limitations
 
-1. Open the earlier `carbon.html` build in the same browser.
-2. Export each workspace: **Export → Export TAR / TAR.GZ** (a Stack exports as `*.stack.tar`, a local copy as `*.folder.tar`). For a linked folder of an earlier build, the files on disk are already yours.
-3. Open this build and import the files with **Open → Import files / archive**. Each import becomes its own workspace.
-
-You can also simply start with a clean Scratch. The earlier database stays in the browser until you clear the site's data yourself.
-
-## Limitations in this increment
-
-- Any bounded UTF-8 text file opens in the Editor (A2, see [text-files.md](text-files.md)); Envoy Stacks keep Markdown-only Entry editing.
-- A linked folder is Carbon's own copy with the folder as its source: Refresh observes, Sync writes one file at a time. Batch Sync, deleting in the folder and remote sources are later work (P2 and #24).
-- Cross-workspace search, a full explorer switcher and per-workspace export bundles are later work (P1).
+- Any bounded UTF-8 text file opens in the Editor (see [text-files.md](text-files.md)); Envoy Stacks keep Markdown-only Entry editing.
+- A linked folder is Carbon's own copy with the folder as its source: Refresh observes, Sync writes one file at a time. Batch Sync, deleting in the source folder and remote sources are not supported.
+- Cross-workspace search and a combined export of multiple workspaces are not supported.
 - Two tabs on the same workspace are detected, not merged: the stale tab stops saving and asks you to reload or export.
 - Browser storage is per address (`file://` vs `https://…`) and per browser profile, and can be evicted by the browser. Export what you want to keep.

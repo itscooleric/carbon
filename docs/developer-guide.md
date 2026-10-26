@@ -1,10 +1,10 @@
 # Carbon developer guide
 
-How the Carbon notebook and the Envoy Cast Kit fit together in this repository: what each module owns, how data flows from an imported Stack to an accepted Return, which bytes are authoritative, and how to build and test the single offline file. Read `README.md`, `docs/format-v0.2.md` and `docs/architecture-v0.2-draft.md` first for the format and rationale; this guide is about the code.
+This guide documents Carbon's modules, runtime state, protocols, safety boundaries, and reproducible build. Start with [README](../README.md), [format specification](format-v0.2.md), and [user guide](carbon-v1.md).
 
-The [product overview](product-overview.md) defines the current description and vocabulary; the [Carbon user guide](carbon-v1.md) covers notebook and Dispatch/Return use.
+The [Carbon user guide](carbon-v1.md) covers notebook and Dispatch/Return behavior.
 
-**Naming.** *Carbon* is the product: the offline notebook distributed as `dist/carbon.html`. *Envoy* names the compatible protocols and the AI workers that speak them (`envoy.stack/v0.2`, `envoy.handoff/v0.2`, `envoy.cast/v0.1`, `envoy.return/v0.1`, `envoy.dispatch/v0.1`). Identifiers, file names and format strings are unchanged; the rename is in prose only. (Browser storage moved to the new `carbon-vfs` database with PR-A1; see `docs/virtual-workspace.md`.)
+**Naming.** *Carbon* is the product: the offline notebook distributed as `dist/carbon.html`. *Envoy* names the compatible protocols and the AI workers that speak them (`envoy.stack/v0.2`, `envoy.handoff/v0.2`, `envoy.cast/v0.1`, `envoy.return/v0.1`, `envoy.dispatch/v0.1`). Protocol identifiers and wire-format strings remain stable. Browser persistence uses the `carbon-vfs` database (see [virtual workspaces](virtual-workspace.md)).
 
 ## Repository tree and ownership
 
@@ -53,10 +53,8 @@ cast-kit/
   src/kit.mjs           parseCast, parseReturn, encodeReturn, registerStack/registerHandoff, stageReturn, acceptInCarbon
   src/dispatch.mjs      composeDispatch (text packet or selected package), dispatchTar
   src/validation.mjs    bounded YAML and portable-path validators shared with the kit
-  src/loop.mjs          bounded adapter driver (host code only; unused by Carbon)
-  src/workbench.mjs     the separate offline lab UI, built to cast-kit/dist/cast-kit.html
   playbooks/*.md, operating-contract-v0.1.md, bootstrap.md   text embedded into every Cast
-  tests/                kit unit tests, fixtures (harbor Stack, planning fixture), Carbon integration (CARBON_ROOT)
+  tests/                synthetic fixture helpers used by Carbon's browser tests
 scripts/build.mjs       deterministic esbuild bundle -> dist/carbon.html (+ the two generated JSON inputs)
 tests/                  node --test unit tests (*.test.js) and Playwright acceptance (browser.mjs and its passes)
 dist/carbon.html        the only runtime artifact; committed and reproducible
@@ -147,30 +145,23 @@ A `DispatchRecord` moves `draft → exported → staged → accepted | rejected 
 - **Atomic commit, explicit failure.** `commit()` writes before assigning. Storage failure during accept leaves the Stack unchanged and the Return staged, with a notice that says so and a Retry.
 - **No network, ever.** CSP `connect-src 'none'`; the browser suites assert zero http(s) requests.
 
-## The two applications
+## Embedded interoperability
 
-| | Carbon (`dist/carbon.html`) | Cast Kit lab (`cast-kit/dist/cast-kit.html`) |
-| --- | --- | --- |
-| Purpose | Notebook, Stack editor, integrated Dispatch/Return workflow | Protocol workbench: load an original handoff, author a Cast, validate a Return |
-| Mutates a Stack | yes, one revision per accepted Return or local edit | no, staging only |
-| Shared code | imports `cast-kit/src/{kit,dispatch}.mjs` and embeds `castkit-assets.json` | imports `src/core` validators through its own tests only (`CARBON_ROOT`) |
+Carbon ships one standalone application: `dist/carbon.html`. Its controllers import `cast-kit/src/kit.mjs` and `dispatch.mjs`, and the build bundles the required code and Playbooks into the HTML. The separate Cast Kit lab and its demonstration artifacts are not part of this repository.
 
-Integration points: `registerStack(stack, castSource, handoff)` (registers the base for a Cast), `stageReturn(handle, text)` (review model inputs), `acceptInCarbon(stack, handle, text, {approved: true})` (the new Stack plus acceptance metadata), `composeDispatch` / `dispatchTar` (packets and selected packages), and the `envoy.dispatch/v0.1` manifest whose `complete_stack: false` is why `readTar` refuses a selected package as a Stack.
+Key integration points are `registerStack` (retain a trusted source), `stageReturn` (validate and prepare a review model), `acceptInCarbon` (apply a user-approved transaction), and `composeDispatch` / `dispatchTar` (export selected context). A selected Dispatch package is not a complete Stack archive.
 
 ## Development and test commands
 
 ```sh
-npm ci && npm --prefix cast-kit ci
-npm test                                   # node --test tests/*.test.js
-npm run build                              # must leave git clean (dist + generated JSON)
-CARBON_BROWSER_PATH=/path/to/chromium npm run test:browser
-npm --prefix cast-kit test
-npm --prefix cast-kit run build
-CAST_BROWSER_PATH=/path/to/chromium npm --prefix cast-kit run test:browser
-CARBON_ROOT=$PWD npm --prefix cast-kit run test:carbon
+npm ci
+npm test
+npm run build
+npx playwright install chromium
+npm run test:browser
 ```
 
-The pinned Playwright cannot download a browser in every environment; `CARBON_BROWSER_PATH` / `CAST_BROWSER_PATH` point the suites at an installed Chromium (the suites add `--no-sandbox` and software GL flags when the variable is set). Browser reports land in `test-results/browser.json` with screenshots beside it; `tests/browser.mjs` runs the original workflow, then `refinements-browser.mjs` (themes, naming, layout, the Dispatch UI smoke pass) and `dispatch-browser.mjs` (the integrated Dispatch/Return scenarios).
+With a preinstalled Chromium executable, set `CARBON_BROWSER_PATH=/absolute/path/to/chromium`. The Carbon CI workflow checks source tests, generated HTML and embedded assets against committed outputs, and the offline browser acceptance suite. Browser reports appear in `test-results/`.
 
 ## Guided code-reading path
 
@@ -183,13 +174,13 @@ The pinned Playwright cannot download a browser in every environment; `CARBON_BR
 
 ## Known limits and follow-ons
 
-- One Carbon window per workspace; the cache is not multi-tab safe.
+- Concurrent windows do not merge edits: stale revisions are detected and require reload or export.
 - Wizard fields saved on `change` (`#draft-create`, `#draft-criteria`, rename targets) commit on blur; `close()` blurs the focused drawer field before clearing the open record, so Esc keeps a value still being typed (regression scenario in `tests/dispatch-browser.mjs`).
 - "Import original Cast…" (recovering a Dispatch on another machine from the Cast file) is not implemented; the dialog says so. Export a fresh Dispatch from the Stack instead.
 - Only text Returns are imported; a file-capable destination's attachment must be opened and pasted (or chosen with the dialog's file picker).
 - Metadata permission covers existing scalar frontmatter keys only; nested or new keys are rejected.
 - The review's J/K shortcuts respond to lowercase `j`/`k` only.
-- No provider adapter is included; `cast-kit/src/loop.mjs` is host-side code with no Carbon UI.
+- No provider API integration ships in Carbon; Cast and Return packets are transferred manually.
 - History is bounded (10 snapshots / 64 MiB); restore numbering only knows retained snapshots (see CB-2 note in `docs/carbon-v1.md`).
 - Folder saves are non-atomic snapshots; gzip needs native streams.
 

@@ -1,6 +1,6 @@
 # Text files: editing any bounded UTF-8 text
 
-Status: PR-A2 of the [default virtual workspace RFC](https://github.com/itscooleric/envoy/pull/25) (revision 3; A2 = the original plan §4.1 plus rev 2 §3). Implementation: `src/carbon/local-files.js` (rules), `src/carbon/editor/view.js` (per-file mode), `src/carbon/ui/editor.js` (Save, preview).
+Implementation: `src/carbon/local-files.js` (rules), `src/carbon/editor/view.js` (per-file mode), `src/carbon/ui/editor.js` (Save, preview).
 
 ## What opens in the Editor
 
@@ -62,7 +62,7 @@ In a linked folder Save keeps the text file in Carbon's copy with its convention
 ## Limitations
 
 - Only UTF-8 is supported. UTF-16, Latin-1 and other encodings are read-only.
-- Mixed line endings can be edited but are saved only as LF. An exact per-line round trip is listed as later work (RFC P3).
+- Mixed line endings can be edited but are saved only as LF. Exact preservation of independently mixed line endings after editing is not implemented.
 - The Editor indents with spaces; files that need tab characters (for example a Makefile) can be edited, but Tab inserts spaces.
 - Palette content search covers Markdown only; file names of every type are matched by the tree filter.
 - Physical-device, Firefox and Safari behaviour is not covered by the automated suite; the inspection dialogs and markers were exercised in Chromium at a 390×844 touch viewport only.

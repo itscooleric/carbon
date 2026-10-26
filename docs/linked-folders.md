@@ -1,6 +1,6 @@
 # Linked folders
 
-Status: PR-A3 of the [default virtual workspace RFC](https://github.com/itscooleric/envoy/pull/25) (revision 3 §§1, 3–7; assignment [#31](https://github.com/itscooleric/envoy/issues/31)). Implementation: `src/carbon/source.js` (source records and the per-path state table, DOM-free), `src/carbon/linked.js` (Refresh, Take folder version, Sync pipeline, status), `src/carbon/ui/source.js` (dialogs and explorer sections).
+Implementation: `src/carbon/source.js` (source records and the per-path state table, DOM-free), `src/carbon/linked.js` (Refresh, Take folder version, Sync pipeline, status), `src/carbon/ui/source.js` (dialogs and explorer sections).
 
 A **linked folder** is a folder opened with the native directory picker (**Open / Import → Open folder (linked)…**, Chromium desktop). Carbon reads it once into **its own copy** in the browser's `carbon-vfs` store and keeps the folder as the copy's **source** and optional **sync target**:
 

@@ -2,13 +2,13 @@
 
 Carbon is a Markdown-first notebook for notes, revisions, and AI work, distributed as **one file: [`dist/carbon.html`](../dist/carbon.html)**. It runs from `file://` without a server, account, runtime package installation, CDN, or network connection. Its source and pinned development dependencies are in this repository.
 
-Start with the [product overview](product-overview.md) for vocabulary, the [README quick start](../README.md#getting-started) for the example Stack, or the [developer guide](developer-guide.md) for the implementation. Carbon names the application; Envoy names its interoperability protocols and compatible AI workers. Existing `envoy.*` identifiers remain unchanged.
+Start with the [README quick start](../README.md#get-started), the [format specification](format-v0.2.md), or the [developer guide](developer-guide.md) for implementation details. Carbon names the application; Envoy names its interoperability protocols and compatible AI workers. Existing `envoy.*` identifiers remain unchanged.
 
 ## Open Carbon
 
-1. Download `dist/carbon.html` from the `dev` branch (GitHub's **Download raw file** action). Save it with the `.html` extension.
-2. Open it in a desktop browser. No installation or terminal command is needed.
-3. Choose **Open / Import → Import folder as local copy…**, or **Open files as local copy…** for individual files. A normal folder needs no manifest. Review the inventory, select **Open copy**, then select a Markdown file in the tree.
+1. Download `dist/carbon.html` from this repository (GitHub's **Download raw file** action). Save it with the `.html` extension.
+2. Open it in a desktop Chromium-based browser. Carbon opens Scratch with a note ready to edit. No installation or terminal command is needed.
+3. To work with existing files, choose **Open / Import → Import folder as local copy…**, or **Open files as local copy…** for individual files. A normal folder needs no manifest. Review the inventory, select **Open copy**, then select a Markdown file in the tree.
 4. Edit with CodeMirror, switch Editor tabs, or use **View** beside reference files to keep them in independent Viewer tabs. **Save in copy** (Ctrl/Cmd+S) updates Carbon's copy, not the source folder.
 5. Use **Download file** for the current Markdown (including its current draft), or save drafts then use **Export files → Export TAR / TAR.GZ** for all files. Verify the download. **Save new folder copy…** writes a new child directory where the browser supports native folder access; it never overwrites the original directory.
 
@@ -27,7 +27,7 @@ Start with the [product overview](product-overview.md) for vocabulary, the [READ
 
 **Refresh from folder** (the ↻ button in the explorer header, or the command palette) reads a linked folder again and shows what differs (new, changed, conflicting and missing files) without changing Carbon's copy; every adoption is an explicit, recoverable action; see [Refresh from folder](linked-folders.md#refresh-from-folder-observation).
 
-Linked folder syncs with a baseline check, an on-disk backup before each overwrite, read-back verification and permission recovery are described in [Linked folders](linked-folders.md) ([#15](https://github.com/itscooleric/envoy/issues/15)); Android Chrome has no directory picker, so it uses the copy route. Physical Android Chrome file-picker, software-keyboard/IME, selection and save/download acceptance remain outstanding. Simulated narrow-screen and native API adapter tests do not establish real-device support.
+Linked folder syncs with a baseline check, an on-disk backup before each overwrite, read-back verification and permission recovery are described in [Linked folders](linked-folders.md) ; Android Chrome has no directory picker, so it uses the copy route. Physical Android Chrome file-picker, software-keyboard/IME, selection and save/download acceptance remain outstanding. Simulated narrow-screen and native API adapter tests do not establish real-device support.
 
 No other file from this repository is required at runtime. Third-party license notices are embedded in the HTML and also supplied in `dist/THIRD-PARTY-LICENSES.txt`.
 
@@ -172,7 +172,7 @@ CARBON_BROWSER_PATH=/absolute/path/to/chromium npm run test:browser
 
 The build bundles source, CSS, templates and licenses, generates a SHA-256 Content Security Policy for its single script, and writes `dist/carbon.html`. There are no runtime module imports. Repeated builds with the lockfile and unchanged inputs must produce identical bytes.
 
-See `docs/validation-v1.md` and, for the Dispatch / Return release, `docs/validation-unified.md` for the exact observed environment, results and unverified capabilities. A build target is not a compatibility claim. Module ownership, data flow and the trust boundary are described in `docs/developer-guide.md`.
+The Carbon CI workflow checks unit tests, a reproducible build, bundled licenses, and Chromium browser scenarios. This does not establish physical mobile-device or all-browser compatibility. Module ownership and trust boundaries are described in the [developer guide](developer-guide.md).
 
 ## Dependencies and deferred work
 
@@ -186,20 +186,3 @@ See `docs/validation-v1.md` and, for the Dispatch / Return release, `docs/valida
 | Playwright | 1.64.1 | Development-only browser acceptance / Apache-2.0 |
 
 Documentation dates for these package versions are not stated in their package metadata. Exact installed versions are locked in `package-lock.json`.
-
-Deferred: configurable YAML naming templates, entity registry, browser-native speech, an optional Node-free builder, graph visualization, direct AI APIs, audio recording/live transcription, remote Git, multi-user editing, hosted services, domain-specific dashboards, external image rendering, in-place folder synchronization, additions/deletions/moves through the legacy v0.2 handoff (use Dispatch), importing an original Cast on another machine, and gzip fallback on browsers without Compression Streams. TAR remains available when gzip APIs are missing.
-
-## Design criteria and evidence
-
-The choices prioritize ordinary-file interoperability, bounded hostile-input processing, metadata preservation, and a small offline bundle. Link resolution and backlinks are indexed once per committed Stack revision; draft preview does not repeatedly parse every Entry. Native gzip avoids another runtime dependency. Raw Entry bytes plus narrowly patched manifest scalar ranges preserve comments and unknown fields. A locally retained dispatch gives Return validation a trusted baseline.
-
-What would change these choices:
-
-- Failure of native gzip or file downloads in a required desktop environment would justify a bundled gzip fallback or an approved alternate distribution path.
-- Measured UI stalls with representative Stacks would justify a Worker and streaming archive implementation before increasing size limits.
-
-Primary references: [YAML 2 documentation](https://eemeli.org/yaml/) (version 2.x; doc date not stated), [DOMPurify documentation](https://github.com/cure53/DOMPurify) (version/date not stated on the overview), [File System Access guide](https://developer.chrome.com/docs/capabilities/web-apis/file-system-access) (version/date not established in this implementation), and the repository's versioned format contract and executable tests.
-
-## Multi-document workspace and local images (draft feature)
-
-See [workspace and images](workspace-images.md) for independent Editor/Viewer tabs, local screenshot insertion, limits, recovery behavior and outstanding Android acceptance. This increment is stacked on the command palette and does not gate release promotion.
