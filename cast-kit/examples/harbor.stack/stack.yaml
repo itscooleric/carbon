@@ -1,0 +1,6 @@
+# Preserve this manifest comment
+format: envoy.stack/v0.2
+id: stk-harbor-demo
+revision: 4
+entrypoint: entries/mission.md
+custom: keep-me

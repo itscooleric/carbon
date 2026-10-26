@@ -1,0 +1,7 @@
+# Portable Envoy Stack manifest
+format: envoy.stack/v0.2
+id: stk-supplier-lead-times-001
+revision: 3
+title: Supplier lead-time investigation
+entrypoint: entries/mission.md
+handling: public-example  # Replace with your approved handling label.

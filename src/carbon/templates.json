@@ -1,0 +1,8 @@
+{
+  "note": "---\nid: ent-replace-with-stable-id\nkind: note\ntitle: Note\n---\n# Note\n",
+  "research": "---\nid: ent-replace-with-stable-id\nkind: research\ntitle: Research inquiry\nstatus: investigating\n---\n# Research inquiry\n\n## Question\n\n## Sources and evidence\n\n## Findings\n\n## Unknowns\n\n## Next actions\n",
+  "requirement": "---\nid: ent-replace-with-stable-id\nkind: requirement\ntitle: Requirement\nstatus: proposed\n---\n# Requirement\n\n## Description\n\n## Acceptance criteria\n\n## Sources and evidence\n\n## Dependencies\n",
+  "mission": "---\nid: ent-replace-with-stable-id\nkind: mission\ntitle: Mission title\nstatus: planned\n---\n# Mission title\n\n## Objective\n\n## Current state\n\n## Accepted decisions\n\n## Evidence\n\n## Next actions\n",
+  "meeting": "---\nid: ent-replace-with-stable-id\nkind: meeting\ntitle: Meeting\n---\n# Meeting\n\n## Date and participants\n\n## Notes\n\n## Decisions\n\n## Actions\n",
+  "transcript": "---\nid: ent-replace-with-stable-id\nkind: transcript\ntitle: Transcript\ncapture_method: manual\n---\n# Transcript\n\n## Capture details\n\n## Transcript\n\n## Review notes\n"
+}

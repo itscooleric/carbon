@@ -1,0 +1,16 @@
+{
+  "browser": "153.0.8010.0",
+  "environment": "headless Linux file://",
+  "network_requests": 0,
+  "page_errors": [],
+  "scenarios": [
+    "four Return fixtures",
+    "text Dispatch composition/download",
+    "malformed paste rejection",
+    "proposed report byte fidelity",
+    "Playbook composition",
+    "two-step recovery mock",
+    "650px viewport/light theme/reduced motion"
+  ],
+  "provider_runs": 0
+}

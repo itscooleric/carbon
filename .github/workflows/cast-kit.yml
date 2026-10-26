@@ -1,0 +1,48 @@
+name: Cast Kit
+# Runs on the permanent branches and on PRs into them. Carbon sources the bridge depends on are included.
+on:
+  push:
+    branches: [main, dev]
+    paths: ['cast-kit/**', 'src/core/**', 'src/archives/**', 'package.json', 'package-lock.json', '.github/workflows/cast-kit.yml']
+  pull_request:
+    branches: [main, dev]
+    paths: ['cast-kit/**', 'src/core/**', 'src/archives/**', 'package.json', 'package-lock.json', '.github/workflows/cast-kit.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  interoperability:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2 # parents of the PR merge commit, for the Carbon evidence line
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            cast-kit/package-lock.json
+      - run: npm --prefix cast-kit ci
+      - run: npm --prefix cast-kit test
+      - run: npm --prefix cast-kit run examples
+      - run: npm --prefix cast-kit run build
+      - run: git diff --exit-code -- cast-kit/examples cast-kit/templates cast-kit/dist
+      - run: npx playwright install --with-deps chromium
+        working-directory: cast-kit
+      - run: npm --prefix cast-kit run test:browser
+      # Integrated build: Carbon from this same checkout (the PR merge with its current base, or the pushed dev/main commit).
+      - run: npm ci
+      - name: Carbon interoperability against the integrated tree
+        run: |
+          git log -1 --format='Carbon under test: %H (parents: %P)' | tee -a "$GITHUB_STEP_SUMMARY"
+          npm --prefix cast-kit run test:carbon
+        env:
+          CARBON_ROOT: ${{ github.workspace }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cast-kit-browser-evidence
+          path: cast-kit/test-results/

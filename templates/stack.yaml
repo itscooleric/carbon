@@ -1,0 +1,7 @@
+# Envoy Stack manifest template
+format: envoy.stack/v0.2
+id: stk-replace-with-stable-id
+revision: 0
+title: New Stack
+entrypoint: entries/mission.md
+# handling: Set an approved local handling label.

@@ -1,0 +1,21 @@
+format: envoy.dispatch/v0.1
+complete_stack: false
+assignment_id: cast-harbor-report
+stack_id: stk-harbor-demo
+base_revision: 4
+playbook_order: []
+assets:
+  - path: assets/marker.bin
+    packaged_as: assets/0001.bin
+    bytes: 6
+omitted_from_package:
+  - entries/retained.md
+files:
+  - README.md
+  - assignment.cast.yaml
+  - operating-contract.md
+  - bootstrap.md
+  - original.handoff.md
+  - receipt.return.md
+  - assets/0001.bin
+  - dispatch.yaml

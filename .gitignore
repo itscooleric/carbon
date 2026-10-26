@@ -1,0 +1,18 @@
+# Runtime data and local scratch
+.env
+.env.*
+!.env.example
+*.stack.tar
+*.stack.tar.gz
+*.handoff.local.md
+node_modules
+coverage/
+dist/
+.DS_Store
+
+!dist/
+!dist/carbon.html
+!dist/THIRD-PARTY-LICENSES.txt
+test-results/
+!examples/supplier-lead-times.stack.tar
+!examples/supplier-lead-times.stack.tar.gz

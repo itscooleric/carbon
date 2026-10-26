@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,interactive-widget=resizes-content"
+    />
+    <meta http-equiv="Content-Security-Policy" content="__CSP__" />
+    <title>Carbon — Envoy notebook</title>
+    <style>
+      __CSS__
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <button
+        id="files-toggle"
+        class="icon"
+        aria-controls="sidebar"
+        aria-expanded="true"
+        aria-label="File explorer"
+        aria-keyshortcuts="Control+Backslash Meta+Backslash"
+        title="File explorer (Ctrl/Cmd+\)"
+      >
+        <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5" /><path d="M5.5 2.5v11" /></svg>
+      </button>
+      <div class="brand">
+        <b>carbon</b><span id="header-stack" class="crumb"></span>
+      </div>
+      <button
+        id="palette-launcher"
+        aria-haspopup="dialog"
+        aria-controls="command-palette"
+        aria-label="Search and commands"
+        aria-keyshortcuts="Control+Shift+P Meta+Shift+P"
+        title="Search and commands (Ctrl/Cmd+Shift+P)"
+      >
+        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5" /><path d="m10.5 10.5 3.5 3.5" /></svg>
+        <span class="launcher-text">Search or run a command</span>
+        <kbd>Ctrl ⇧ P</kbd>
+      </button>
+      <div class="header-actions">
+        <details class="menu" id="menu-import">
+          <summary aria-label="Open / Import" title="Open / Import">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1.5 4.5v8a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-6a1 1 0 0 0-1-1H8L6.5 3.5h-4a1 1 0 0 0-1 1z" /></svg>
+            <span class="menu-text">Open</span>
+          </summary>
+          <div class="menu-pop right" role="group" aria-label="Import and local folders">
+            <button id="open-scratch" title="Your default notes workspace, saved in this browser">Scratch notes</button>
+            <button id="workspaces" title="Switch between the workspaces kept in this browser">Workspaces…</button>
+            <hr />
+            <button id="open-files">Open files as local copy…</button>
+            <button id="import">Import files / archive</button>
+            <button id="folder-import">Import folder as local copy…</button>
+            <button id="open-folder" title="Keeps the folder linked: Refresh reads it, Sync file to folder… writes one file after you confirm">Open folder (linked)…</button>
+            <button id="save-folder">Save new folder copy…</button>
+            <button id="create-stack" hidden>Create Envoy Stack from copy…</button>
+          </div>
+        </details>
+        <details class="menu" id="menu-export">
+          <summary aria-label="Export" title="Export">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v8m-3.5-3.5L8 10l3.5-3.5M2.5 11.5v2h11v-2" /></svg>
+            <span class="menu-text" id="export-label">Export Stack</span>
+          </summary>
+          <div class="menu-pop right" role="group" aria-label="Export Stack">
+            <div class="menu-label">Complete snapshot</div>
+            <button id="export-tar" title="Complete snapshot; filename uses the stable Stack ID and revision">Export TAR<small>All files, uncompressed</small></button>
+            <button id="export-gzip" title="Complete compressed snapshot; filename uses the stable Stack ID and revision">Export TAR.GZ<small>All files, compressed</small></button>
+            <hr />
+            <div class="menu-label">Legacy Needlecast (envoy.handoff/v0.2)</div>
+            <button id="export-handoff">Needlecast export<small>Unchanged existing route</small></button>
+            <button id="register-dispatch">Register original handoff</button>
+            <button type="button" id="export-history" hidden>Export local history…</button>
+          </div>
+        </details>
+        <button
+          id="dispatch"
+          aria-label="Dispatch"
+          class="dispatch-btn"
+          aria-keyshortcuts="Control+Shift+D Meta+Shift+D"
+          title="Ctrl/Cmd+Shift+D"
+        >
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 11.5l7-7m-5 0h5v5" /></svg>
+          <span class="menu-text">Dispatch</span>
+        </button>
+        <details class="menu" id="menu-more">
+          <summary aria-label="More" title="More">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="3.5" cy="8" r="1" /><circle cx="8" cy="8" r="1" /><circle cx="12.5" cy="8" r="1" /></svg>
+          </summary>
+          <div class="menu-pop right" role="group" aria-label="More">
+            <button id="import-return">Import Return…<small>Check an AI reply against its Dispatch</small></button>
+            <hr />
+            <button id="new-stack">New Stack</button>
+            <button id="history">History</button>
+            <button type="button" id="source-changes" hidden>Folder changes…</button>
+            <button type="button" id="reconnect-folder" hidden>Reconnect folder…</button>
+            <button type="button" id="forget-folder" hidden>Forget remembered consent…</button>
+            <button id="capabilities">Capabilities</button>
+            <hr />
+            <button id="show-shortcuts">Keyboard shortcuts<small>F1</small></button>
+          </div>
+        </details>
+      </div>
+    </header>
+    <div class="workspace" id="workspace">
+      <aside id="sidebar" aria-label="Stack">
+        <div class="stack-heading">
+          <h1 id="stack-title" aria-label="Stack display title"></h1>
+          <div id="stack-meta"></div>
+          <button type="button" id="scratch-shortcut" class="link" hidden>⌂ Back to Scratch notes</button>
+          <details id="stack-identity">
+            <summary>Stable ID</summary>
+            <code id="stack-id"></code>
+          </details>
+          <p id="stack-status" role="status"></p>
+          <button id="confirm-export" hidden>Confirm archive saved</button>
+        </div>
+        <div class="side-search">
+          <label for="search" class="sr">Search Entries</label>
+          <input id="search" type="search" placeholder="Filter files…" />
+          <button id="new-entry" class="icon" aria-label="New Entry" title="New Entry">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9" /></svg>
+          </button>
+          <button id="new-folder" class="icon" aria-label="New folder" title="New folder">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1.5 4.5v8a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-6a1 1 0 0 0-1-1H8L6.5 3.5h-4a1 1 0 0 0-1 1zM8 7.5v4M6 9.5h4" /></svg>
+          </button>
+          <button id="refresh-folder" class="icon" aria-label="Refresh from folder" title="Read the folder again and show what differs; changes nothing in Carbon" hidden>
+            <span aria-hidden="true">↻</span>
+          </button>
+        </div>
+        <nav id="tree" aria-label="Workspace files"></nav>
+        <div id="selection-status" class="hint"></div>
+        <section class="side-sec" id="assets-section" hidden>
+          <h2>Assets</h2>
+          <ul id="assets" class="asset-list"></ul>
+        </section>
+        <section class="side-sec" id="dispatches-section">
+          <h2>Dispatches<button id="new-dispatch" class="sm">+ New</button></h2>
+          <span id="toolbar-selection" class="hint"></span>
+          <ul id="dispatches" class="dlist" aria-label="Dispatches"></ul>
+        </section>
+      </aside>
+      <main>
+        <div id="documents" data-side="editor">
+          <section id="editor-pane" aria-label="Editor documents">
+            <div class="pane-bar">
+              <div id="editor-tabs" class="document-tabs" role="tablist" aria-label="Editor tabs"></div>
+              <div class="pane-tools" role="group" aria-label="Document">
+                <select id="view" class="vh" tabindex="-1" aria-label="Editor view">
+                  <option value="split">Split</option>
+                  <option value="edit">Edit</option>
+                  <option value="preview">Preview</option>
+                </select>
+                <button id="toggle-split" class="icon" aria-pressed="true" aria-label="Close preview" title="Close preview">
+                  <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5" /><path d="M8 2.5v11" /></svg>
+                </button>
+                <button id="show-viewer" class="icon" aria-controls="viewer-pane" aria-expanded="false" aria-label="Show Viewer" title="Show Viewer">
+                  <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5" /><path d="M10.5 2.5v11" /><rect x="10.5" y="3" width="3.5" height="10" class="fill" /></svg>
+                </button>
+                <button id="save-entry" class="save" title="Save Entry (Ctrl/Cmd+S)">Save Entry</button>
+                <span id="save-state" class="save-state" hidden aria-live="polite"></span>
+                <details class="menu" id="menu-doc">
+                  <summary aria-label="Document actions" title="Document actions">
+                    <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="3.5" cy="8" r="1" /><circle cx="8" cy="8" r="1" /><circle cx="12.5" cy="8" r="1" /></svg>
+                  </summary>
+                  <div class="menu-pop right" role="group" aria-label="Document actions">
+                    <div class="menu-label">Edit</div>
+                    <button id="toggle-task">Toggle task<kbd>Alt+C</kbd></button>
+                    <button id="format-bold">Bold<kbd>Ctrl+B</kbd></button>
+                    <button id="select-next">Select next occurrence</button>
+                    <button id="toggle-preview">Toggle preview<kbd>Alt+P</kbd></button>
+                    <button id="toggle-layout">Preview below</button>
+                    <button id="insert-image">Insert image…</button>
+                    <hr />
+                    <div class="menu-label">Entry</div>
+                    <button id="open-current-viewer">Open in Viewer</button>
+                    <button id="dispatch-this" title="Start a Dispatch with this Entry as context">Dispatch this Entry…</button>
+                    <button id="rename">Rename / move…</button>
+                    <button type="button" id="sync-file" hidden>Sync file to folder…</button>
+                    <button type="button" id="disk-history" hidden>Local file history…</button>
+                    <button id="download-file">Download file</button>
+                    <button id="delete">Delete…</button>
+                    <hr />
+                    <div class="menu-label">Inspect</div>
+                    <button id="text-details" title="Bytes, byte-order mark, line endings and invisible characters of this file">Text details…</button>
+                    <button id="inspect-chars" title="Unicode code points at the cursor or in the selection">Inspect characters…</button>
+                    <label class="menu-check"><input id="show-invisibles" type="checkbox" /> Show invisibles (spaces, tabs, line ends) this session</label>
+                    <hr />
+                    <label class="menu-check"><input id="occurrence-shortcut" type="checkbox" /> Use Ctrl/Cmd+D for Select next this session</label>
+                  </div>
+                </details>
+                <input id="image-files" type="file" accept="image/png,image/jpeg,image/webp" multiple hidden />
+              </div>
+            </div>
+            <div id="editor-panel" role="tabpanel" aria-label="Editor document">
+              <div id="panes" class="split">
+                <div id="editor"></div>
+                <div
+                  id="preview-splitter"
+                  role="separator"
+                  tabindex="0"
+                  aria-label="Resize editor and preview"
+                  aria-valuemin="20"
+                  aria-valuemax="80"
+                  aria-valuenow="50"
+                  title="Drag to resize · arrows adjust · double-click or Home resets"
+                ></div>
+                <article id="preview" tabindex="0" aria-label="Markdown preview"></article>
+              </div>
+              <footer id="links"></footer>
+            </div>
+            <div class="accessory" role="toolbar" aria-label="Formatting">
+              <button data-proxy="toggle-task" aria-label="Toggle task">☐</button>
+              <button data-proxy="format-bold" aria-label="Bold"><b>B</b></button>
+              <button data-proxy="insert-image" aria-label="Insert image">
+                <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5" /><circle cx="5.5" cy="6.5" r="1.2" /><path d="m2 12 4-4 3 3 2-2 3 3" /></svg>
+              </button>
+              <button data-proxy="toggle-preview" aria-label="Toggle preview">
+                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1.5 8s2.5-4.5 6.5-4.5S14.5 8 14.5 8 12 12.5 8 12.5 1.5 8 1.5 8z" /><circle cx="8" cy="8" r="2" /></svg>
+              </button>
+              <button data-proxy="dispatch-this" aria-label="Dispatch this Entry">
+                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 11.5l7-7m-5 0h5v5" /></svg>
+              </button>
+            </div>
+          </section>
+          <div
+            id="workspace-splitter"
+            role="separator"
+            tabindex="0"
+            aria-label="Resize Editor and Viewer"
+            aria-orientation="vertical"
+            aria-valuemin="25"
+            aria-valuemax="75"
+            aria-valuenow="50"
+            aria-controls="editor-pane viewer-pane"
+            title="Drag to resize; arrow keys adjust; Home resets to 50/50"
+            hidden
+          ></div>
+          <section id="viewer-pane" aria-label="Reference Viewer" hidden>
+            <div class="pane-bar">
+              <div id="viewer-tabs" class="document-tabs" role="tablist" aria-label="Viewer tabs"></div>
+              <div class="pane-tools" role="group" aria-label="Viewer">
+                <button id="swap-panes" class="icon" aria-label="Swap Editor and Viewer" title="Swap Editor and Viewer">
+                  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 5.5h11m-3-3 3 3-3 3M13.5 10.5h-11m3-3-3 3 3 3" /></svg>
+                </button>
+                <button data-proxy="show-viewer" class="icon" aria-label="Hide Viewer" title="Hide Viewer">
+                  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 4 8 8m0-8-8 8" /></svg>
+                </button>
+              </div>
+            </div>
+            <p id="viewer-path" class="sr">Reference Viewer</p>
+            <article id="viewer-content" role="tabpanel" tabindex="0" aria-label="Read-only reference"></article>
+          </section>
+        </div>
+      </main>
+      <section id="drawer" class="drawer" aria-label="Dispatch" aria-labelledby="drawer-title" hidden>
+        <div class="dhead">
+          <div class="dtitle">
+            <h2 id="drawer-title">Dispatch</h2>
+            <span id="drawer-chip"></span>
+            <span class="spacer"></span>
+            <button id="drawer-close" class="quiet" aria-label="Close Dispatch panel (Esc). The draft is kept.">✕</button>
+          </div>
+          <div class="dsub" id="drawer-sub"></div>
+          <nav class="steps" id="drawer-steps" aria-label="Dispatch steps"></nav>
+        </div>
+        <div class="dbody" id="drawer-body"></div>
+        <div class="dfoot" id="drawer-foot">
+          <button id="drawer-back">← Back</button><button id="drawer-discard" class="quiet">Discard draft</button><span class="spacer"></span><button id="drawer-skip" title="Defaults are filled in; everything is shown before export">Skip to review ⇥</button><button id="drawer-next" class="primary">Next →</button>
+        </div>
+      </section>
+    </div>
+    <section id="review" class="review" aria-label="Return review" hidden>
+      <div class="rbanner" id="review-banner"></div>
+      <div class="rbody">
+        <nav class="rfiles" id="review-files" aria-label="Proposed changes"></nav>
+        <div class="rdiff" id="review-diff" tabindex="0" aria-label="Change detail"></div>
+        <aside class="rside" id="review-receipt" aria-label="Receipt and checks"></aside>
+      </div>
+      <div class="rfoot" id="review-foot"></div>
+    </section>
+    <div id="notice" role="status" aria-live="polite">Opening local workspace…</div>
+    <footer class="bottom statusbar">
+      <div class="modes" role="group" aria-label="Active pane">
+        <button id="workspace-editor" aria-pressed="true">Editor</button>
+        <button id="workspace-viewer" aria-pressed="false">Viewer</button>
+      </div>
+      <span id="current-path" class="sb-path">Choose an Entry</span>
+      <div id="editor-status" role="status"></div>
+      <span id="link-status" class="status-link" hidden></span>
+      <span class="spacer"></span>
+      <span id="persistence" class="sb-persist"></span>
+      <label class="theme-picker"><span class="sr">Theme</span>
+        <select id="theme" aria-describedby="theme-status" title="Theme">
+          <option value="system">System</option>
+          <option value="dark">Dark</option>
+          <option value="light">Light</option>
+        </select>
+      </label>
+      <span id="theme-status" role="status"></span>
+    </footer>
+    <input id="local-files" type="file" multiple hidden />
+    <input id="files" type="file" multiple hidden />
+    <input id="folders" type="file" webkitdirectory multiple hidden />
+    <input id="original" type="file" accept=".md" hidden />
+    <input id="playbook-file" type="file" accept=".md,text/markdown" hidden />
+    <dialog id="dialog" aria-labelledby="dialog-title" aria-describedby="dialog-error">
+      <div id="dialog-content"></div>
+      <p id="dialog-error" role="alert"></p>
+      <div class="dialog-actions">
+        <button id="dialog-cancel">Cancel</button><button id="dialog-accept" class="primary">Accept</button>
+      </div>
+    </dialog>
+    <dialog id="command-palette" aria-labelledby="palette-title" aria-describedby="palette-help">
+      <div class="palette-heading">
+        <h2 id="palette-title" class="sr">Search / commands</h2>
+        <!-- Close precedes the input in DOM order so Shift+Tab stays inside the modal; CSS places it last. -->
+        <button id="palette-close" class="icon" aria-label="Close">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 4 8 8m0-8-8 8" /></svg>
+        </button>
+        <label for="palette-query" class="sr">Search the active Stack</label>
+        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5" /><path d="m10.5 10.5 3.5 3.5" /></svg>
+        <input id="palette-query" type="search" placeholder="Commands, Entries, entities or contents" autocomplete="off" spellcheck="false" />
+      </div>
+      <p id="palette-help" class="sr">Arrow keys move through results. Enter opens a result or expands excerpts. Tab moves between controls. Escape closes and returns focus.</p>
+      <button id="palette-all" hidden>Search all types</button>
+      <p id="palette-status" role="status" aria-live="polite" aria-atomic="true"></p>
+      <div id="palette-results"></div>
+    </dialog>
+    <dialog id="shortcuts-dialog" aria-labelledby="shortcuts-title">
+      <div class="palette-heading">
+        <h2 id="shortcuts-title">Keyboard shortcuts</h2>
+        <button id="shortcuts-close" class="icon" aria-label="Close">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 4 8 8m0-8-8 8" /></svg>
+        </button>
+      </div>
+      <dl class="keys">
+        <dt><kbd>Ctrl/Cmd+Shift+P</kbd></dt><dd>Search and commands</dd>
+        <dt><kbd>Ctrl/Cmd+\</kbd></dt><dd>Show or hide the file explorer</dd>
+        <dt><kbd>Ctrl/Cmd+S</kbd></dt><dd>Save Entry</dd>
+        <dt><kbd>Alt+P</kbd></dt><dd>Switch between editing and full preview</dd>
+        <dt>Split button</dt><dd>Open or close the preview beside the editor; drag the divider to resize</dd>
+        <dt><kbd>Alt+C</kbd></dt><dd>Check or uncheck selected tasks</dd>
+        <dt><kbd>Tab</kbd> · <kbd>Shift+Tab</kbd></dt><dd>Nest or un-nest list items; elsewhere indent or outdent. Escape then Tab leaves the editor; Ctrl+M toggles focus mode</dd>
+        <dt><kbd>Ctrl/Cmd+B</kbd> · <kbd>I</kbd></dt><dd>Surround selection with bold or italic</dd>
+        <dt><kbd>Alt+click</kbd></dt><dd>Add a cursor</dd>
+        <dt><kbd>Ctrl/Cmd+Shift+D</kbd></dt><dd>New Dispatch</dd>
+        <dt><kbd>Ctrl/Cmd+Z</kbd> · <kbd>Shift+Z</kbd></dt><dd>Undo · redo</dd>
+        <dt><kbd>F1</kbd></dt><dd>This list</dd>
+      </dl>
+      <p id="editor-help" class="hint">
+        Enter continues lists; Enter on an empty item exits one level. Alt+C checks selected
+        tasks, or unchecks them if all are checked. Ctrl/Cmd+B or I surrounds a selection.
+        Alt+click adds a cursor; Select next selects matching words. Ctrl/Cmd+Z undoes;
+        Ctrl/Cmd+Shift+Z redoes. Ctrl/Cmd+S saves. Alt+P toggles preview. In movable lists,
+        Tab indents and Shift+Tab outdents; elsewhere they move focus. Press Escape then Tab or
+        Shift+Tab within two seconds to leave the editor. Ctrl+M (Mac: Alt+Shift+M) toggles
+        persistent Tab focus navigation. Browser Ctrl/Cmd+D and F stay available.
+      </p>
+    </dialog>
+    <dialog id="image-dialog" aria-labelledby="image-title">
+      <div class="image-heading">
+        <h2 id="image-title">Image</h2>
+        <button id="image-close">Close image</button>
+      </div>
+      <div class="image-controls" role="group" aria-label="Image zoom and pan">
+        <button id="image-fit">Fit</button><button id="image-actual">100%</button>
+        <button id="image-out" aria-label="Zoom out">−</button><button id="image-in" aria-label="Zoom in">+</button>
+        <button id="image-pan-left">Pan left</button><button id="image-pan-right">Pan right</button>
+        <button id="image-pan-up">Pan up</button><button id="image-pan-down">Pan down</button>
+        <button id="image-download">Download original</button>
+        <span id="image-scale" role="status"></span>
+      </div>
+      <div id="image-viewport" tabindex="0" role="region" aria-label="Full-resolution image; scroll or use pan controls"></div>
+    </dialog>
+    <script>
+      __JS__;
+    </script>
+    <template id="third-party-licenses">__LICENSES__</template>
+  </body>
+</html>

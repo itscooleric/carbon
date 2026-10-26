@@ -1,0 +1,37 @@
+format: envoy.cast/v0.1
+contract: envoy.operating/v0.1
+assignment_id: cast-harbor-registry
+dispatch_id: dispatch-harbor-registry
+stack_id: stk-harbor-demo
+base_revision: 4
+mission: entries/mission.md
+objective: Propose a dataset Entity and link the existing findings.
+read:
+  - stack.yaml
+  - entries/mission.md
+  - entries/source.md
+  - entries/findings.md
+replace:
+  - entries/findings.md
+create:
+  - entries/entity.md
+delete: []
+rename: []
+outputs:
+  - Entity Entry and linked findings
+constraints:
+  - Use only supplied fictional evidence. Preserve accepted facts and original source.
+permissions:
+  network: false
+  execute: false
+  write_files: false
+  transmit_to: []
+completion:
+  - Every finding names its supplied source; unresolved limitations are explicit.
+return_format: envoy.return/v0.1
+playbooks: []
+metadata: []
+assets: []
+required_files:
+  - entries/entity.md
+  - entries/findings.md

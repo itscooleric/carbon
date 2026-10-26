@@ -1,0 +1,36 @@
+format: envoy.cast/v0.1
+contract: envoy.operating/v0.1
+assignment_id: cast-harbor-research
+dispatch_id: dispatch-harbor-research
+stack_id: stk-harbor-demo
+base_revision: 4
+mission: entries/mission.md
+objective: Assess fields in the supplied fictional dataset.
+read:
+  - stack.yaml
+  - entries/mission.md
+  - entries/source.md
+  - entries/findings.md
+replace:
+  - entries/findings.md
+create:
+  - entries/report.md
+delete: []
+rename: []
+outputs:
+  - Complete updated findings Entry
+constraints:
+  - Use only supplied fictional evidence. Preserve accepted facts and original source.
+permissions:
+  network: false
+  execute: false
+  write_files: false
+  transmit_to: []
+completion:
+  - Every finding names its supplied source; unresolved limitations are explicit.
+return_format: envoy.return/v0.1
+playbooks: []
+metadata: []
+assets: []
+required_files:
+  - entries/findings.md
