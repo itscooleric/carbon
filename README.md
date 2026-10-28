@@ -8,7 +8,7 @@
   ╚██████╗██║  ██║██║  ██║██████╔╝╚██████╔╝██║ ╚████║
    ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝  ╚═════╝ ╚═╝  ╚═══╝
 
-  markdown-first notebook                  PUBLIC BETA
+  markdown-first notebook                 PRIVATE BETA
   ------------------------------------------------------
 
              +--------------------------------+
@@ -77,26 +77,15 @@ Carbon is experimental software. Please keep backups of anything important.
 
 See the [user guide](docs/carbon-v1.md), [workspace and persistence guide](docs/virtual-workspace.md), and [linked-folder guide](docs/linked-folders.md) for more details.
 
-## Development
+## Distribution and verification
 
-Carbon is open source and uses standard HTML, CSS, and JavaScript.
+This repository's private beta preview contains the standalone Carbon HTML application and its license notices. Source, build scripts and developer tests are maintained separately while the implementation undergoes owner review.
 
-Requirements: **Node.js 22+** and npm.
+- Download and open `dist/carbon.html` locally; no installation, network access or account is required.
+- The published HTML embeds its application JavaScript and styles; distributing this file still makes that bundled code inspectable.
+- See `dist/THIRD-PARTY-LICENSES.txt` for embedded dependency notices.
 
-```bash
-npm ci
-npm test
-npm run build
-```
-
-For browser tests, install Playwright's Chromium browser and run:
-
-```bash
-npx playwright install chromium
-npm run test:browser
-```
-
-The standalone application is generated at `dist/carbon.html`. It requires no runtime server or external JavaScript packages.
+This is a staging preview, not a published release. It has not yet incorporated the latest pending development changes. Keep backups and verify the final reviewed build before wider use.
 
 ## Feedback
 
