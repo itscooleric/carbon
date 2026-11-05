@@ -1,6 +1,6 @@
 # Security and data handling
 
-Envoy has **no built-in authority to transfer information** between environments. Import/export and any AI endpoint usage remain subject to applicable local policy.
+Carbon's private beta has **no built-in authority to transfer information** between environments. Import/export and any AI handoff remain explicit user actions and subject to applicable local policy. It makes no direct AI-provider calls.
 
 ## Stack boundaries
 - Treat archives and handoffs as untrusted input; never execute imported content.
@@ -9,7 +9,15 @@ Envoy has **no built-in authority to transfer information** between environments
 - Preserve partial handoff omissions; validate base revision and allowed paths before applying proposed modifications.
 - Never trust AI-generated checksums, access claims, validation claims, or approval statements as authoritative.
 - Do not embed provider API keys in shipped browser code or commit credentials.
-- Validate whether speech recognition processes audio locally or remotely before using it with protected material.
+- **Voice notes are experimental and local-only.** The built-in voice control requires `SpeechRecognition.processLocally` and a locally available language pack. It must not switch to remote recognition. Use the feature only when your browser and workplace policy permit it; do not enter protected material into untrusted transcription services. Physical microphone transcription has not been verified on all browsers.
 - Do not put confidential Stacks or transcripts in repository examples.
 
 Report security concerns privately to the repository owner; avoid including sensitive payloads in public issues.
+
+## Private beta limitations
+
+- The standalone HTML includes bundled application code that recipients can inspect. Keeping the underlying source tree private does not make the bundle's JavaScript secret.
+- Browser workspace storage is not a durable backup. Export and verify important files regularly.
+- Linked-folder Sync is explicit and guarded, but no browser API provides an atomic compare-and-swap against concurrent writes from external OS programs at the moment the file is committed. Avoid simultaneous edits of the same file.
+- On a failed Sync of a newly created file, an empty placeholder may remain. The visible **Sync into empty placeholder** action is deliberate, checks for conflicts and does not delete the placeholder.
+- This branch is a private owner-testing preview, not a public distribution announcement.
