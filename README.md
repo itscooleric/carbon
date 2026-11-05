@@ -87,7 +87,7 @@ This repository's **private** beta preview contains the standalone Carbon HTML a
 - The published HTML embeds its application JavaScript and styles; distributing this file still makes that bundled code inspectable.
 - See `dist/THIRD-PARTY-LICENSES.txt` for embedded dependency notices.
 
-**Build provenance:** `dist/carbon.html` matches the Git blob in private Envoy vNext integration commit [`93a33e5`](https://github.com/itscooleric/envoy/commit/93a33e56bb1b3348e6568f1538216c5b742cdefe), blob SHA `82bb9dd1acfb7d1a62ff3db323d2ad0d3f3cd9bb` (1,118,007 bytes). The Carbon and Cast Kit CI suites passed on the reviewed integration source. This is for owner testing, **not** an announcement, visibility change or public release. Keep backups and test in a disposable workspace before relying on it.
+**Build provenance:** `dist/carbon.html` is a private preview of reviewed Carbon vNext (`93a33e5`) plus the **block-before-C favicon** from [Envoy PR #54](https://github.com/itscooleric/envoy/pull/54). Exact Git blob SHA: `69d464ad369996107390838907d0fdafa42df3e2`. The reviewed base passed Carbon and Cast Kit CI; this favicon follow-up has passed unit, build and reproducibility checks, with browser CI still in progress at the time of staging. Download the HTML to test its tab/shortcut icon. This is for owner testing, **not** an announcement, visibility change or public release. Keep backups and test in a disposable workspace before relying on it.
 
 ## Feedback
 
