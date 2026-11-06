@@ -8,7 +8,7 @@
   ╚██████╗██║  ██║██║  ██║██████╔╝╚██████╔╝██║ ╚████║
    ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝  ╚═════╝ ╚═╝  ╚═══╝
 
-  markdown-first notebook                  PUBLIC BETA
+  markdown-first notebook                   OPEN BETA
   ------------------------------------------------------
 
              +--------------------------------+
@@ -29,7 +29,9 @@
   one HTML file  ·  works offline  ·  no account needed
 ```
 
-**A notebook for your notes, files, and ideas.**
+**Your notes. Your files. Your workspace.**
+
+*Open beta — a standalone Markdown notebook you can download and run offline.*
 
 Carbon is a lightweight, Markdown-first workspace that runs entirely in your browser. Write notes, organize files, inspect references, keep revisions, and export your work in portable formats.
 
@@ -39,15 +41,16 @@ No server, account, or AI subscription is required. Download one HTML file and s
 
 - **Write freely.** Edit Markdown and ordinary text files, including `.txt`, `.json`, `.yaml`, and other supported UTF-8 files. Preserve line endings and byte-order marks.
 - **Work in independent spaces.** Start immediately in Scratch, or open files and folders as separate workspaces with their own notes, drafts, and history.
-- **Keep references visible.** Use the file explorer, search, wiki links, and independent Viewer tabs while editing.
+- **Keep references visible.** Use the file explorer, search, wiki links, independent Viewer tabs, and Find/Replace (including regex, match-case and whole-word options) while editing.
 - **Keep your work portable.** Review earlier revisions, restore changes, and export ordinary files or complete TAR/TAR.GZ archives.
-- **Link local folders.** On supported desktop Chromium browsers, inspect external changes and explicitly sync individual files back to their source folder.
-- **Experiment with AI handoffs.** Package selected context for an AI assistant, inspect proposed changes, and decide what to accept. This optional workflow currently uses manual transfers and is still being evaluated with real models.
+- **Link local folders.** On supported desktop Chromium browsers, inspect external changes and explicitly sync individual files back to their source folder. After a failed new-file Sync leaves an empty placeholder, Carbon offers an explicit **Sync into empty placeholder** action with conflict checks; it does not silently delete the file.
+- **Experiment with AI handoffs.** Package selected context for an AI assistant, download a Dispatch as TAR/TAR.GZ (including re-download), inspect proposed changes, and decide what to accept. Plan/Report Returns omit unchanged entries by default; you can explicitly require every replaceable entry. Invalid Returns offer a repair prompt. This manual-transfer workflow is still being evaluated with real models.
+- **Try local-only voice notes (experimental).** On supported desktop browsers (Chrome/Edge 139+), install the browser's on-device language pack on demand, dictate, review the transcript, then explicitly insert it into the current Markdown note. Unsupported browsers report why. Carbon never silently switches to cloud transcription.
 
 ## Get started
 
 1. Download [`dist/carbon.html`](dist/carbon.html) using GitHub's **Download raw file** action.
-2. Open `carbon.html` in a desktop Chromium-based browser.
+2. Open `carbon.html` in a desktop Chromium-based browser (Chrome or Edge is recommended for experimental on-device voice).
 3. Carbon opens in **Scratch**, with a note ready for you to edit.
 4. Write something and press **Ctrl+S** (or **Cmd+S**) to save it in Carbon's browser workspace.
 5. Use **Download file** or **Export files** to keep a copy outside your browser.
@@ -63,7 +66,7 @@ Carbon offers two distinct workflows:
 | **Import folder as local copy** | Read files into an independent workspace. The original folder stays unchanged. |
 | **Open folder (linked)** | Keep a browser working copy connected to a local folder, where supported. |
 
-In a linked folder, **Save** changes Carbon's browser copy. **Refresh from folder** shows external changes without replacing your work. **Sync file to folder** is a separate, explicit operation that checks the source and writes one file after confirmation.
+In a linked folder, **Save** changes Carbon's browser copy. **Refresh from folder** shows external changes without replacing your work. **Sync file to folder** is a separate, explicit operation that checks the source and writes one file after confirmation. If an attempted Sync of a *new* file leaves an empty placeholder, **Sync into empty placeholder** requires another explicit click and verifies it is still empty before writing; when it has changed, Carbon refuses and preserves both copies. External programs can still race at the final filesystem commit, so do not edit the same file simultaneously in another program.
 
 ## Beta notes
 
@@ -74,29 +77,23 @@ Carbon is experimental software. Please keep backups of anything important.
 - **Browser support varies.** Native linked folders require a supported desktop browser. Mobile and other browser workflows are still undergoing compatibility testing.
 - **No automatic cloud sync.** Workspaces are local to their browser storage. Opening Carbon on another device does not automatically transfer your notes.
 - **AI handoffs are experimental.** Carbon does not run an AI model or connect directly to an AI provider, and real-model interoperability is not yet established.
+- **Voice is experimental and local-only.** Browser support depends on the on-device Web Speech API and locally available language packs. Desktop Chrome/Edge 139+ is the documented primary target; Firefox 160 support was still beta at this build's review. Real physical microphone recognition has not been verified for this build, and phone in-app voice is not currently supported. You can use your phone's keyboard dictation instead.
 
-See the [user guide](docs/carbon-v1.md), [workspace and persistence guide](docs/virtual-workspace.md), and [linked-folder guide](docs/linked-folders.md) for more details.
+These are the current beta boundaries, not hidden prerequisites. The development workspace, full source tree and build/test tools are not part of this distribution; the browser app and its embedded JavaScript remain inspectable. Detailed development documents are not included in this distribution.
 
-## Development
+## Distribution and verification
 
-Carbon is open source and uses standard HTML, CSS, and JavaScript.
+This open-beta **distribution candidate** contains the standalone Carbon HTML application, its dependency notices, MIT license, security notes and this README. The full development source tree, build scripts and test suites are not bundled with this reduced distribution. This does not imply that a GitHub Release has been published or that this repository is already public.
 
-Requirements: **Node.js 22+** and npm.
+- Download and open `dist/carbon.html` locally; no installation, network access or account is required.
+- The published HTML embeds its application JavaScript and styles; distributing this file still makes that bundled code inspectable.
+- See `dist/THIRD-PARTY-LICENSES.txt` for embedded dependency notices.
 
-```bash
-npm ci
-npm test
-npm run build
-```
+**Build provenance:** This proposed distribution contains the compiled Carbon vNext application with its updated block-before-C favicon. The staged `dist/carbon.html` Git blob is `69d464ad369996107390838907d0fdafa42df3e2` (1,118,509 bytes). The reviewed vNext foundation passed unit/browser and Cast Kit CI, and the favicon integration passed its follow-on browser CI. These are build-specific checks, not proof of production reliability or physical microphone performance. For a first trial, use disposable notes and export a backup.
 
-For browser tests, install Playwright's Chromium browser and run:
+## Who this beta is for
 
-```bash
-npx playwright install chromium
-npm run test:browser
-```
-
-The standalone application is generated at `dist/carbon.html`. It requires no runtime server or external JavaScript packages.
+Carbon is for people who want a local, Markdown-first place to write, organize references, and move editable files between tools. It is designed to be useful without an account, cloud service or agent. Advanced linked-folder Sync, experimental voice dictation, and structured AI Returns are optional features with the limitations listed above.
 
 ## Feedback
 
@@ -106,4 +103,4 @@ When reporting a problem, include your browser, operating system, the action you
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE) and [third-party dependency notices](dist/THIRD-PARTY-LICENSES.txt). MIT includes a warranty and liability disclaimer; it does not eliminate every possible legal obligation or risk.
