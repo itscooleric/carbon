@@ -8,7 +8,7 @@
   ╚██████╗██║  ██║██║  ██║██████╔╝╚██████╔╝██║ ╚████║
    ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝  ╚═════╝ ╚═╝  ╚═══╝
 
-  markdown-first notebook                 PRIVATE BETA
+  markdown-first notebook                   OPEN BETA
   ------------------------------------------------------
 
              +--------------------------------+
@@ -29,7 +29,9 @@
   one HTML file  ·  works offline  ·  no account needed
 ```
 
-**A notebook for your notes, files, and ideas.**
+**Your notes. Your files. Your workspace.**
+
+*Open beta — a standalone Markdown notebook you can download and run offline.*
 
 Carbon is a lightweight, Markdown-first workspace that runs entirely in your browser. Write notes, organize files, inspect references, keep revisions, and export your work in portable formats.
 
@@ -77,17 +79,21 @@ Carbon is experimental software. Please keep backups of anything important.
 - **AI handoffs are experimental.** Carbon does not run an AI model or connect directly to an AI provider, and real-model interoperability is not yet established.
 - **Voice is experimental and local-only.** Browser support depends on the on-device Web Speech API and locally available language packs. Desktop Chrome/Edge 139+ is the documented primary target; Firefox 160 support was still beta at this build's review. Real physical microphone recognition has not been verified for this build, and phone in-app voice is not currently supported. You can use your phone's keyboard dictation instead.
 
-Internal maintainers can consult the more detailed guides in the private [Envoy development repository](https://github.com/itscooleric/envoy/tree/main/docs). Those development documents are intentionally not part of this distribution-only preview.
+These are the current beta boundaries, not hidden prerequisites. The development workspace, full source tree and build/test tools are not part of this distribution; the browser app and its embedded JavaScript remain inspectable. Detailed development documents are not included in this distribution.
 
 ## Distribution and verification
 
-This repository's **private** beta preview contains the standalone Carbon HTML application and its license notices. The source tree, build scripts, test suites, and development history remain in the separate private Envoy repository.
+This open-beta **distribution candidate** contains the standalone Carbon HTML application, its dependency notices, MIT license, security notes and this README. The full development source tree, build scripts and test suites are not bundled with this reduced distribution. This does not imply that a GitHub Release has been published or that this repository is already public.
 
 - Download and open `dist/carbon.html` locally; no installation, network access or account is required.
 - The published HTML embeds its application JavaScript and styles; distributing this file still makes that bundled code inspectable.
 - See `dist/THIRD-PARTY-LICENSES.txt` for embedded dependency notices.
 
-**Build provenance:** `dist/carbon.html` is a private preview of reviewed Carbon vNext (`93a33e5`) plus the **block-before-C favicon** from [Envoy PR #54](https://github.com/itscooleric/envoy/pull/54). Exact Git blob SHA: `69d464ad369996107390838907d0fdafa42df3e2`. The reviewed base passed Carbon and Cast Kit CI; this favicon follow-up has passed unit, build and reproducibility checks, with browser CI still in progress at the time of staging. Download the HTML to test its tab/shortcut icon. This is for owner testing, **not** an announcement, visibility change or public release. Keep backups and test in a disposable workspace before relying on it.
+**Build provenance:** This proposed distribution contains the compiled Carbon vNext application with its updated block-before-C favicon. The staged `dist/carbon.html` Git blob is `69d464ad369996107390838907d0fdafa42df3e2` (1,118,509 bytes). The reviewed vNext foundation passed unit/browser and Cast Kit CI, and the favicon integration passed its follow-on browser CI. These are build-specific checks, not proof of production reliability or physical microphone performance. For a first trial, use disposable notes and export a backup.
+
+## Who this beta is for
+
+Carbon is for people who want a local, Markdown-first place to write, organize references, and move editable files between tools. It is designed to be useful without an account, cloud service or agent. Advanced linked-folder Sync, experimental voice dictation, and structured AI Returns are optional features with the limitations listed above.
 
 ## Feedback
 
@@ -97,4 +103,4 @@ When reporting a problem, include your browser, operating system, the action you
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE) and [third-party dependency notices](dist/THIRD-PARTY-LICENSES.txt). MIT includes a warranty and liability disclaimer; it does not eliminate every possible legal obligation or risk.

@@ -1,6 +1,6 @@
 # Security and data handling
 
-Carbon's private beta has **no built-in authority to transfer information** between environments. Import/export and any AI handoff remain explicit user actions and subject to applicable local policy. It makes no direct AI-provider calls.
+Carbon's open beta has **no built-in authority to transfer information** between environments. Import/export and any AI handoff remain explicit user actions and subject to applicable local policy. It makes no direct AI-provider calls.
 
 ## Stack boundaries
 - Treat archives and handoffs as untrusted input; never execute imported content.
@@ -14,10 +14,16 @@ Carbon's private beta has **no built-in authority to transfer information** betw
 
 Report security concerns privately to the repository owner; avoid including sensitive payloads in public issues.
 
-## Private beta limitations
+## Open beta limitations
 
 - The standalone HTML includes bundled application code that recipients can inspect. Keeping the underlying source tree private does not make the bundle's JavaScript secret.
 - Browser workspace storage is not a durable backup. Export and verify important files regularly.
 - Linked-folder Sync is explicit and guarded, but no browser API provides an atomic compare-and-swap against concurrent writes from external OS programs at the moment the file is committed. Avoid simultaneous edits of the same file.
 - On a failed Sync of a newly created file, an empty placeholder may remain. The visible **Sync into empty placeholder** action is deliberate, checks for conflicts and does not delete the placeholder.
-- This branch is a private owner-testing preview, not a public distribution announcement.
+- This document accompanies an open-beta distribution candidate. Publication, access rights and release tags must be verified separately; beta status does not imply production readiness.
+
+## Reporting and release boundaries
+
+Report ordinary bugs through [GitHub Issues](https://github.com/itscooleric/carbon/issues) without uploading confidential notes or screenshots. For a suspected security vulnerability, use private GitHub vulnerability reporting if enabled, or contact the maintainer through an existing private channel rather than publishing sensitive details.
+
+The MIT license permits distribution under its terms and provides an AS-IS disclaimer; it does not provide immunity from all claims. This limited distribution does not include the full development source tree, and the bundled HTML/JavaScript remains inspectable.
